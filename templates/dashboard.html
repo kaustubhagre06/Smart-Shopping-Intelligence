@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Analytics Dashboard — SmartShop AI{% endblock %}
+
+{% block head_extra %}
+<script src="{{ url_for('static', filename='js/plotly.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+    <div>
+      <h1>Retail &amp; Market-Basket Analytics Dashboard</h1>
+      <p>Interactive Plotly visualizations computed dynamically from SQLite transactions and Apriori association rules.</p>
+    </div>
+    <a href="{{ url_for('recommendations') }}" class="btn btn-primary btn-sm">Open AI Recommender</a>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 28px;">
+  <div class="container">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Transactions</div>
+        <div class="kpi-value">{{ analytics.kpis.total_transactions }}</div>
+        <div class="kpi-sub">{{ analytics.kpis.checkout_orders }} live checkout order{{ '' if analytics.kpis.checkout_orders == 1 else 's' }}</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Catalog Products</div>
+        <div class="kpi-value">{{ analytics.kpis.total_products }}</div>
+        <div class="kpi-sub">Across 6 retail categories</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Association Rules</div>
+        <div class="kpi-value">{{ analytics.kpis.rules_count }}</div>
+        <div class="kpi-sub">Active Apriori rules mined</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Avg. Basket Size</div>
+        <div class="kpi-value">{{ analytics.kpis.avg_basket_size }}</div>
+        <div class="kpi-sub">Avg. order ${{ "%.2f"|format(analytics.kpis.avg_order_value) }}</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Cumulative Revenue</div>
+        <div class="kpi-value">${{ "{:,.2f}".format(analytics.kpis.total_revenue) }}</div>
+        <div class="kpi-sub">Calculated from SQLite items</div>
+      </div>
+    </div>
+
+    <!-- Plotly Charts -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Most Popular Products</div>
+        <div class="chart-desc">Top 12 items ranked by transaction frequency across all baskets.</div>
+        <div id="chartPopular"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Category-Wise Shopping Trends</div>
+        <div class="chart-desc">Share of total units sold and revenue contribution by category.</div>
+        <div id="chartCategory"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Top Product Combinations</div>
+        <div class="chart-desc">Frequently purchased together itemsets mined by Apriori (Support %).</div>
+        <div id="chartCombos"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Association Rules Quality Map</div>
+        <div class="chart-desc">Support vs. Confidence bubble chart; bubble size &amp; color indicate Lift.</div>
+        <div id="chartRules"></div>
+      </div>
+
+      <div class="chart-card full-width">
+        <div class="chart-title">Product Co-Occurrence Heatmap (Top 10 Items)</div>
+        <div class="chart-desc">Pairwise basket co-occurrence counts showing natural cross-sell affinities.</div>
+        <div id="chartHeatmap"></div>
+      </div>
+    </div>
+
+    <!-- Top Rules Table -->
+    <div class="card">
+      <div class="card-padded" style="border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="margin-bottom:4px;">Frequently Purchased Together — Top Association Rules</h3>
+          <p style="margin:0; font-size:0.86rem; color:var(--slate-500);">Ranked by Lift, Confidence, and Support.</p>
+        </div>
+        <span class="badge badge-success">Live SQLite + Apriori</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>If Customer Buys</th>
+              <th>Frequently Also Buys</th>
+              <th>Support</th>
+              <th>Confidence</th>
+              <th>Lift</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in analytics.top_rules %}
+            <tr>
+              <td><strong>{{ r.antecedents }}</strong></td>
+              <td><span class="badge">{{ r.consequents }}</span></td>
+              <td>{{ r.support_pct }}%</td>
+              <td>{{ r.confidence_pct }}%</td>
+              <td><strong>{{ r.lift }}x</strong></td>
+              <td style="color:var(--slate-500); font-size:0.84rem;">{{ r.explanation }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" style="text-align:center; color:var(--slate-500);">No association rules available yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const charts = {{ analytics.charts | tojson }};
+    const config = { responsive: true, displaylogo: false };
+
+    if (charts.popular_products) {
+      Plotly.newPlot("chartPopular", charts.popular_products.data, charts.popular_products.layout, config);
+    }
+    if (charts.category_trends) {
+      Plotly.newPlot("chartCategory", charts.category_trends.data, charts.category_trends.layout, config);
+    }
+    if (charts.top_combinations) {
+      Plotly.newPlot("chartCombos", charts.top_combinations.data, charts.top_combinations.layout, config);
+    }
+    if (charts.rules_scatter) {
+      Plotly.newPlot("chartRules", charts.rules_scatter.data, charts.rules_scatter.layout, config);
+    }
+    if (charts.cooccurrence_heatmap) {
+      Plotly.newPlot("chartHeatmap", charts.cooccurrence_heatmap.data, charts.cooccurrence_heatmap.layout, config);
+    }
+  });
+</script>
+{% endblock %}

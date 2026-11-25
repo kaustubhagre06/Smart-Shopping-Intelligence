@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g-soy-sauce" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E7E5E4"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="28" fill="url(#g-soy-sauce)"/>
+  <circle cx="158" cy="42" r="24" fill="#44403C" opacity="0.12"/>
+  <circle cx="40" cy="158" r="18" fill="#44403C" opacity="0.10"/>
+  <rect x="86" y="48" width="28" height="14" rx="4" fill="#44403C" opacity="0.85"/><path d="M84 64h32l10 20v50a10 10 0 0 1-10 10H84a10 10 0 0 1-10-10V84l10-20z" fill="#44403C"/><rect x="80" y="92" width="40" height="28" rx="4" fill="#FFFFFF" opacity="0.85"/>
+</svg>

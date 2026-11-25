@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}SmartShop AI — Intelligent Retail & Apriori Recommendations{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">
+        <span>Machine Learning Powered Retail</span>
+        <span class="badge">Apriori Algorithm</span>
+      </div>
+      <h1>Turn Every Shopping Basket into <span>Actionable Intelligence</span></h1>
+      <p class="hero-lead">
+        Smart Shopping Intelligence System analyzes historical customer transactions using the Apriori association rule mining algorithm to uncover hidden co-purchase patterns and deliver explainable real-time recommendations.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Explore 36 Products</a>
+        <a href="{{ url_for('recommendations') }}" class="btn btn-outline btn-lg">Try AI Recommender</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-ghost btn-lg">View Analytics &rarr;</a>
+      </div>
+
+      <div class="hero-metrics">
+        <div>
+          <div class="hero-metric-val">{{ model_stats.total_transactions }}</div>
+          <div class="hero-metric-label">Baskets Analyzed</div>
+        </div>
+        <div>
+          <div class="hero-metric-val">{{ model_stats.frequent_itemsets_count }}</div>
+          <div class="hero-metric-label">Frequent Itemsets</div>
+        </div>
+        <div>
+          <div class="hero-metric-val">{{ model_stats.rules_count }}</div>
+          <div class="hero-metric-label">Association Rules</div>
+        </div>
+        <div>
+          <div class="hero-metric-val">36</div>
+          <div class="hero-metric-label">Curated Products</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-preview-card">
+      <div class="preview-header">
+        <div>
+          <div style="font-weight: 800; font-size: 1.05rem;">Live Apriori Rule Feed</div>
+          <div style="font-size: 0.82rem; color: var(--slate-500);">Trained directly on SQLite transaction history</div>
+        </div>
+        <span class="badge badge-success">Live Model</span>
+      </div>
+
+      <div class="rule-preview-list">
+        {% for rule in top_rules %}
+        <div class="rule-preview-item">
+          <div class="rule-pair">
+            <span>{{ rule.antecedents }} &rarr; {{ rule.consequents }}</span>
+            <span class="badge">Lift {{ rule.lift }}x</span>
+          </div>
+          <div style="font-size: 0.84rem; color: var(--navy-700); margin-bottom: 6px;">
+            {{ rule.explanation }}
+          </div>
+          <div class="rule-meta">
+            <span>Confidence: <strong>{{ rule.confidence_pct }}%</strong></span>
+            <span>Support: <strong>{{ rule.support_pct }}%</strong></span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Popular Shopping Categories</h2>
+        <p class="section-subtitle">Browse 6 curated retail departments feeding our market-basket model.</p>
+      </div>
+      <a href="{{ url_for('products') }}" class="btn btn-outline">View All Products</a>
+    </div>
+
+    <div class="category-grid">
+      {% for cat in categories %}
+      <a href="{{ url_for('products', category=cat.category) }}" class="category-card">
+        <span class="badge" style="align-self: flex-start;">{{ cat.product_count }} items</span>
+        <div class="category-title">{{ cat.category }}</div>
+        <div class="category-meta">Avg. price ${{ "%.2f"|format(cat.avg_price) }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: #FFFFFF; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Featured Products</h2>
+        <p class="section-subtitle">Top-rated essentials with strong cross-category Apriori co-purchase rules.</p>
+      </div>
+      <a href="{{ url_for('products') }}" class="btn btn-primary">Open Product Explorer</a>
+    </div>
+
+    <div class="product-grid">
+      {% for p in featured_products %}
+      <article class="product-card">
+        <a href="{{ url_for('product_detail', product_id=p.id) }}" class="product-img-wrap">
+          <span class="product-badge">{{ p.badge }}</span>
+          <img src="{{ p.image_path }}" alt="{{ p.name }}" loading="lazy" />
+        </a>
+        <div class="product-cat">{{ p.category }}</div>
+        <h3 class="product-name">
+          <a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+        </h3>
+        <div class="product-unit">{{ p.unit }} · ★ {{ "%.1f"|format(p.rating) }}</div>
+        <div class="product-footer">
+          <span class="product-price">${{ "%.2f"|format(p.price) }}</span>
+          <div style="display:flex; gap:6px;">
+            <a href="{{ url_for('recommendations', item=p.name) }}" class="btn btn-outline btn-sm">AI Rules</a>
+            <button class="btn btn-primary btn-sm" onclick="addToCart({{ p.id }}, 1)">+ Add</button>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="card card-padded" style="background: linear-gradient(135deg, #0F172A, #1E1B4B); color: #FFFFFF; padding: 40px;">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:24px;">
+        <div style="max-width: 640px;">
+          <span class="badge" style="background: rgba(255,255,255,0.14); color: #E0E7FF; margin-bottom: 12px;">Interactive ML Pipeline</span>
+          <h2 style="color: #FFFFFF; font-size: 1.8rem; margin-bottom: 10px;">Explore Real-Time Market Basket Analytics</h2>
+          <p style="color: #CBD5E1; margin: 0;">
+            Inspect Plotly visualizations of popular products, category revenue trends, frequent itemset combinations, and co-occurrence heatmaps computed straight from SQLite.
+          </p>
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Open Analytics Dashboard</a>
+          {% if not current_user %}
+            <a href="{{ url_for('register') }}" class="btn btn-outline btn-lg" style="background:rgba(255,255,255,0.08); color:#FFFFFF; border-color:rgba(255,255,255,0.22);">Create Account</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

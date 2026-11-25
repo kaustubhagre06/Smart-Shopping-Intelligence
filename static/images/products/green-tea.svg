@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g-green-tea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#DCFCE7"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="28" fill="url(#g-green-tea)"/>
+  <circle cx="158" cy="42" r="24" fill="#16A34A" opacity="0.12"/>
+  <circle cx="40" cy="158" r="18" fill="#16A34A" opacity="0.10"/>
+  <rect x="58" y="68" width="84" height="66" rx="12" fill="#16A34A"/><path d="M100 80c-12 10-12 26 0 36 12-10 12-26 0-36z" fill="#DCFCE7"/>
+</svg>

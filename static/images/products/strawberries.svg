@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g-strawberries" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFE4E6"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="28" fill="url(#g-strawberries)"/>
+  <circle cx="158" cy="42" r="24" fill="#E11D48" opacity="0.12"/>
+  <circle cx="40" cy="158" r="18" fill="#E11D48" opacity="0.10"/>
+  <path d="M100 138c-22-10-34-34-30-54 3-14 16-22 30-22s27 8 30 22c4 20-8 44-30 54z" fill="#E11D48"/><path d="M84 62l16 10 16-10-10-10H94l-10 10z" fill="#16A34A"/><circle cx="88" cy="92" r="2.5" fill="#FFE4E6"/><circle cx="104" cy="86" r="2.5" fill="#FFE4E6"/><circle cx="110" cy="106" r="2.5" fill="#FFE4E6"/><circle cx="92" cy="114" r="2.5" fill="#FFE4E6"/>
+</svg>

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Shopping Cart — SmartShop AI{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1>Shopping Cart &amp; Checkout</h1>
+    <p>Adjust quantities, receive live Apriori basket recommendations, and save completed transactions to SQLite.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 28px;">
+  <div class="container">
+    <div id="checkoutReceipt" style="display:none; margin-bottom: 22px;"></div>
+
+    <div class="cart-layout">
+      <div class="card" id="cartItemsContainer">
+        {% if cart['items'] %}
+          {% for item in cart['items'] %}
+          <div class="cart-item">
+            <img src="{{ item.image_path }}" alt="{{ item.name }}" />
+            <div style="flex:1; min-width: 150px;">
+              <div style="font-size:0.75rem; font-weight:600; color:var(--accent-primary);">{{ item.category }}</div>
+              <div style="font-weight:700; font-size:1.02rem;">{{ item.name }}</div>
+              <div style="font-size:0.84rem; color:var(--slate-500);">${{ "%.2f"|format(item.price) }} / {{ item.unit }}</div>
+            </div>
+            <div class="qty-control">
+              <button onclick="updateCartQty({{ item.id }}, {{ item.quantity - 1 }})" aria-label="Decrease quantity">-</button>
+              <span>{{ item.quantity }}</span>
+              <button onclick="updateCartQty({{ item.id }}, {{ item.quantity + 1 }})" aria-label="Increase quantity">+</button>
+            </div>
+            <div style="min-width: 78px; text-align:right; font-weight:800;">${{ "%.2f"|format(item.line_total) }}</div>
+            <button class="btn btn-danger-soft btn-sm" onclick="removeCartItem({{ item.id }})">Remove</button>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="padding: 48px 24px; text-align: center;">
+            <h3 style="margin-bottom: 8px;">Your shopping cart is empty</h3>
+            <p style="color: var(--slate-500); margin-bottom: 20px;">Explore our 36 products and add items to see real-time Apriori recommendations.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Explore Products</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="card card-padded" id="cartSummaryContainer">
+        <h3 style="margin-bottom: 14px;">Order Summary</h3>
+        <div class="summary-row"><span>Total Items</span><span>{{ cart.item_count }}</span></div>
+        <div class="summary-row"><span>Subtotal</span><span>${{ "%.2f"|format(cart.subtotal) }}</span></div>
+        <div class="summary-row"><span>Estimated Tax (5%)</span><span>${{ "%.2f"|format(cart.tax) }}</span></div>
+        <div class="summary-total"><span>Total</span><span>${{ "%.2f"|format(cart.total) }}</span></div>
+        {% if cart['items'] %}
+          <button id="checkoutBtn" class="btn btn-primary btn-lg" style="width:100%; margin-top:18px;" onclick="checkoutOrder()">Complete Checkout</button>
+          <button class="btn btn-ghost btn-sm" style="width:100%; margin-top:8px;" onclick="clearCart()">Clear Cart</button>
+        {% else %}
+          <button class="btn btn-primary" style="width:100%; margin-top:18px; opacity:0.55; cursor:not-allowed;" disabled>Complete Checkout</button>
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="section-header" style="margin-bottom: 18px;">
+        <div>
+          <h2 class="section-title" style="font-size:1.35rem;">Smart Basket Recommendations</h2>
+          <p class="section-subtitle">Frequently bought together with the items currently in your cart.</p>
+        </div>
+      </div>
+
+      <div id="cartRecsContainer">
+        {% if cart.recommendations %}
+          <div class="rec-grid">
+            {% for r in cart.recommendations %}
+            <div class="rec-card">
+              <div class="rec-top">
+                <img src="{{ r.product.image_path }}" alt="{{ r.product.name }}" />
+                <div>
+                  <div style="font-weight:700;">{{ r.product.name }}</div>
+                  <div style="font-size:0.84rem; color:var(--slate-500);">${{ "%.2f"|format(r.product.price) }} · {{ r.product.category }}</div>
+                </div>
+              </div>
+              <div class="rec-explanation">{{ r.explanation }}</div>
+              <div class="metrics-row">
+                <div class="metric-chip"><strong>{{ r.confidence_pct }}%</strong><span>Confidence</span></div>
+                <div class="metric-chip"><strong>{{ r.support_pct }}%</strong><span>Support</span></div>
+                <div class="metric-chip"><strong>{{ r.lift }}x</strong><span>Lift</span></div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="addRecommendedToCart({{ r.product.id }})">+ Add to Cart</button>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="alert alert-info" style="margin:0;">{{ cart.rec_message }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if past_orders %}
+    <div style="margin-top: 40px;">
+      <h2 class="section-title" style="font-size:1.35rem; margin-bottom:14px;">Your Recent Saved Transactions</h2>
+      <div class="card table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Transaction Code</th>
+              <th>Date</th>
+              <th>Items Purchased</th>
+              <th>Count</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tx in past_orders %}
+            <tr>
+              <td><code>{{ tx.transaction_code }}</code></td>
+              <td>{{ tx.created_at }}</td>
+              <td>
+                {% for it in tx['items'] %}
+                  {{ it.product_name }} (&times;{{ it.quantity }}){% if not loop.last %}, {% endif %}
+                {% endfor %}
+              </td>
+              <td>{{ tx.item_count }}</td>
+              <td><strong>${{ "%.2f"|format(tx.total_amount) }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

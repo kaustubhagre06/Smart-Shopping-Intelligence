@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g-laundry-pods" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#EDE9FE"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="28" fill="url(#g-laundry-pods)"/>
+  <circle cx="158" cy="42" r="24" fill="#7C3AED" opacity="0.12"/>
+  <circle cx="40" cy="158" r="18" fill="#7C3AED" opacity="0.10"/>
+  <rect x="60" y="60" width="80" height="14" rx="6" fill="#7C3AED"/><path d="M66 74h68l-8 64a8 8 0 0 1-8 7H82a8 8 0 0 1-8-7l-8-64z" fill="#7C3AED" opacity="0.86"/><rect x="76" y="92" width="48" height="26" rx="5" fill="#FFFFFF" opacity="0.88"/>
+</svg>

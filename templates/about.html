@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}About Project — SmartShop AI{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <div class="container">
+    <h1>About Smart Shopping Intelligence System</h1>
+    <p>B.Tech Artificial Intelligence &amp; Data Science — Applied Market Basket Analysis &amp; Recommender Platform.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 32px;">
+  <div class="container">
+    <div class="about-grid" style="margin-bottom: 28px;">
+      <div class="card card-padded">
+        <span class="badge" style="margin-bottom: 10px;">01 · Problem Statement</span>
+        <h3>Why Retail Needs Basket Intelligence</h3>
+        <p style="color: var(--navy-700); font-size: 0.94rem; margin-bottom: 0;">
+          Modern e-commerce and supermarket catalogs contain hundreds of SKUs, yet static storefronts treat every item in isolation. Without analyzing historical co-purchase behavior, stores miss high-converting cross-sell bundles, optimal shelf placements, and personalized cart suggestions.
+        </p>
+      </div>
+
+      <div class="card card-padded">
+        <span class="badge" style="margin-bottom: 10px;">02 · Project Objectives</span>
+        <h3>Core Engineering Goals</h3>
+        <ul style="padding-left: 18px; margin: 0; color: var(--navy-700); font-size: 0.94rem; display:flex; flex-direction:column; gap:6px;">
+          <li>Preprocess and one-hot encode raw multi-item shopping baskets using Pandas.</li>
+          <li>Discover frequent itemsets and association rules via the Apriori algorithm.</li>
+          <li>Deliver real-time, explainable recommendations inside product views and the cart.</li>
+          <li>Visualize trends and rule quality dynamically using Plotly and SQLite.</li>
+        </ul>
+      </div>
+
+      <div class="card card-padded">
+        <span class="badge" style="margin-bottom: 10px;">03 · Technology Stack</span>
+        <h3>Production Architecture</h3>
+        <ul style="padding-left: 18px; margin: 0; color: var(--navy-700); font-size: 0.94rem; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Frontend:</strong> Semantic HTML5, Modern CSS3, Vanilla ES6 JavaScript</li>
+          <li><strong>Backend:</strong> Python Flask REST &amp; Template Server</li>
+          <li><strong>ML &amp; Data:</strong> mlxtend Apriori, Pandas, NumPy</li>
+          <li><strong>Visualization &amp; DB:</strong> Plotly Interactive Charts, SQLite3</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card card-padded" style="margin-bottom: 28px;">
+      <span class="badge" style="margin-bottom: 10px;">04 · Machine Learning Methodology</span>
+      <h2 style="font-size: 1.45rem; margin-bottom: 12px;">How the Apriori Algorithm Powers Recommendations</h2>
+      <p style="color: var(--navy-700); margin-bottom: 18px;">
+        The Apriori algorithm exploits the downward-closure property: any subset of a frequent itemset must also be frequent. Our pipeline loads {{ model_stats.total_transactions }} historical and live checkout baskets from SQLite, removes duplicates, encodes transactions into a boolean matrix, mines frequent itemsets, and ranks candidate rules using three core metrics:
+      </p>
+
+      <div class="formula-box">
+        Support(A &rarr; B) = P(A &cup; B) = Transactions containing both A and B / Total Transactions<br/>
+        Confidence(A &rarr; B) = P(B | A) = Support(A &cup; B) / Support(A)<br/>
+        Lift(A &rarr; B) = Confidence(A &rarr; B) / Support(B) &nbsp;&nbsp;(Lift &gt; 1.0 indicates positive co-purchase affinity)
+      </div>
+    </div>
+
+    <div class="about-grid">
+      <div class="card card-padded">
+        <span class="badge badge-success" style="margin-bottom: 10px;">05 · End-to-End Pipeline</span>
+        <h3>7-Stage ML Workflow</h3>
+        <ol style="padding-left: 18px; margin: 0; color: var(--navy-700); font-size: 0.93rem; display:flex; flex-direction:column; gap:6px;">
+          <li>Load transaction history from SQLite &amp; CSV.</li>
+          <li>Clean tokens, validate SKUs, deduplicate per basket.</li>
+          <li>One-hot encode via <code>TransactionEncoder</code>.</li>
+          <li>Extract frequent itemsets with Apriori.</li>
+          <li>Generate association rules filtered by confidence &amp; lift.</li>
+          <li>Retrain automatically after every completed checkout.</li>
+          <li>Serve human-readable explanations to the UI.</li>
+        </ol>
+      </div>
+
+      <div class="card card-padded">
+        <span class="badge" style="margin-bottom: 10px;">06 · Future Scope</span>
+        <h3>Next-Generation Extensions</h3>
+        <ul style="padding-left: 18px; margin: 0; color: var(--navy-700); font-size: 0.93rem; display:flex; flex-direction:column; gap:6px;">
+          <li>FP-Growth benchmarking for million-row retail datasets.</li>
+          <li>Hybrid Collaborative Filtering + Apriori cold-start handling.</li>
+          <li>Time-aware sequential pattern mining (PrefixSpan) for repeat grocery cycles.</li>
+          <li>Dynamic bundle discount pricing and inventory demand forecasting.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
